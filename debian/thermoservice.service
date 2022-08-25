@@ -1,0 +1,16 @@
+[Unit]
+Description=Temperature sharing service for DS18B20
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/usr/share/thermoservice
+Environment=FLASK_CONFIG=production
+Environment=FLASK_APP=thermoservice.py
+ExecStartPre=modprobe w1-gpio
+ExecStartPre=modprobe w1-therm
+ExecStart=/usr/bin/gunicorn -b localhost:5000 -w 4 thermoservice:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

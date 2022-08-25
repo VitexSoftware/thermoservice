@@ -1,0 +1,3 @@
+thermoservice.py        usr/share/thermoservice
+app/*                   usr/share/thermoservice/app
+static/*                usr/share/thermoservice/static

@@ -1,0 +1,16 @@
+Source: thermoservice
+Section: web
+Priority: optional
+Maintainer: Vítězslav Dvořák <info@vitexsoftware.cz>
+Build-Depends: debhelper-compat (= 12), dh_python, python3-flask
+Standards-Version: 4.5.0
+Homepage: https://github.com/VitexSoftware/thermoservice
+#Vcs-Git: https://salsa.debian.org/debian/thermoservice.git
+#Vcs-Browser: https://salsa.debian.org/debian/thermoservice
+
+Package: thermoservice
+Architecture: all
+Depends: ${shlibs:Depends},	${misc:Depends}
+Description: Temperature sharing service for DS18B20
+ Show current temerature on 0.0.0.0:5000
+
