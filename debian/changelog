@@ -1,6 +1,10 @@
-thermoservice (0.1) UNRELEASED; urgency=low
+thermoservice (0.2) UNRELEASED; urgency=low
 
+  [ Vítězslav Dvořák ]
   * Initial release. Closes: #nnnn
     <nnnn is the bug number of your ITP>
 
- -- Vítězslav Dvořák <info@vitexsoftware.cz>  Thu, 25 Aug 2022 23:47:40 +0200
+  [ vitex ]
+  * Basic functionality
+
+ -- vitex <info@vitexsoftware.cz>  Fri, 26 Aug 2022 03:59:18 +0200

@@ -2,3 +2,4 @@ thermoservice.py        usr/share/thermoservice
 app/*                   usr/share/thermoservice/app
 static/*                usr/share/thermoservice/static
 debian/thermo.conf      etc/modules-load.d/
+thermo                  usr/bin
