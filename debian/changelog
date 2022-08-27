@@ -1,4 +1,4 @@
-thermoservice (0.2) UNRELEASED; urgency=low
+thermoservice (0.3) UNRELEASED; urgency=low
 
   [ Vítězslav Dvořák ]
   * Initial release. Closes: #nnnn
@@ -6,5 +6,6 @@ thermoservice (0.2) UNRELEASED; urgency=low
 
   [ vitex ]
   * Basic functionality
+  * Cleaned
 
- -- vitex <info@vitexsoftware.cz>  Fri, 26 Aug 2022 03:59:18 +0200
+ -- vitex <info@vitexsoftware.cz>  Sat, 27 Aug 2022 23:21:25 +0200
