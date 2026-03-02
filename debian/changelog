@@ -1,3 +1,12 @@
+thermoservice (0.4) unstable; urgency=medium
+
+  * Updated for Debian 13 (Trixie)
+  * Updated debhelper-compat to 13
+  * Updated Standards-Version to 4.6.2
+  * Added python3-all build dependency
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Sun, 02 Mar 2026 12:00:00 +0100
+
 thermoservice (0.3) UNRELEASED; urgency=low
 
   [ Vítězslav Dvořák ]

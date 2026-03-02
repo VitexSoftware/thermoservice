@@ -2,8 +2,8 @@ Source: thermoservice
 Section: web
 Priority: optional
 Maintainer: Vítězslav Dvořák <info@vitexsoftware.cz>
-Build-Depends: debhelper-compat (= 12), dh-python
-Standards-Version: 4.5.0
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all
+Standards-Version: 4.6.2
 Homepage: https://github.com/VitexSoftware/thermoservice
 #Vcs-Git: https://salsa.debian.org/debian/thermoservice.git
 #Vcs-Browser: https://salsa.debian.org/debian/thermoservice
