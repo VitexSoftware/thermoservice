@@ -20,6 +20,21 @@ sudo apt update
 sudo apt install thermoservice
 ```
 
+### Zabbix Integration
+
+To enable Zabbix monitoring of temperature sensors:
+
+```bash
+sudo apt install thermometer-zabbix
+```
+
+This installs Zabbix Agent2 configuration that provides the following user parameters:
+
+- `sensor.temp.value` - Current temperature in Celsius
+- `sensor.temp.celsius` - Current temperature in Celsius
+
+The Zabbix agent will automatically restart after installation to load the new configuration.
+
 ## Usage
 
 Run command `thermo` to print current temperature to stdout:
@@ -36,12 +51,15 @@ The service automatically starts and exposes a web interface on port 5000, displ
 Thermoservice is a lightweight Flask-based web service designed for Raspberry Pi and similar devices equipped with DS18B20 temperature sensors. It reads temperature data from the 1-Wire interface and provides both a command-line tool and a web interface for monitoring temperature readings.
 
 **Features:**
+
 - Simple command-line temperature reading with `thermo` command
 - Web interface on port 5000 for real-time temperature display
 - Systemd service integration for automatic startup
 - Designed for DS18B20 digital temperature sensors
 - Graceful handling when no sensor hardware is detected
+- Optional Zabbix Agent2 integration for monitoring (thermometer-zabbix package)
 
 **Requirements:**
+
 - DS18B20 temperature sensor connected via 1-Wire interface
 - Raspberry Pi or compatible device with 1-Wire support enabled
