@@ -2,10 +2,15 @@
 from curses import echo
 import glob
 import time
+import sys
 
 base_dir = '/sys/bus/w1/devices/'
 # Get all the filenames begin with 28 in the path base_dir.
-device_folder = glob.glob(base_dir + '28*')[0]
+devices = glob.glob(base_dir + '28*')
+if not devices:
+    print("No DS18B20 temperature sensor detected")
+    sys.exit(0)
+device_folder = devices[0]
 device_file = device_folder + '/w1_slave'
 
 
