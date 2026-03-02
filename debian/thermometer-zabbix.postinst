@@ -3,9 +3,11 @@ set -e
 
 case "$1" in
     configure)
-        # Restart zabbix-agent2 to load the new configuration
+        # Restart zabbix agent to load the new configuration
         if systemctl is-active --quiet zabbix-agent2; then
             systemctl restart zabbix-agent2 || true
+        elif systemctl is-active --quiet zabbix-agent; then
+            systemctl restart zabbix-agent || true
         fi
     ;;
 

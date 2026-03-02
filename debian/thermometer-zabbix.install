@@ -1,1 +1,2 @@
 debian/thermometer.conf etc/zabbix/zabbix_agent2.d/
+debian/thermometer.conf etc/zabbix/zabbix_agentd.conf.d/
