@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="service">
+  <id>com.vitexsoftware.thermoservice</id>
+  
+  <name>thermoservice</name>
+  <summary>Temperature sharing service for DS18B20</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  
+  <description>
+    <p>
+      Thermoservice is a lightweight Flask-based web service designed for Raspberry Pi and similar devices equipped with DS18B20 temperature sensors. It reads temperature data from the 1-Wire interface and provides both a command-line tool and a web interface for monitoring temperature readings.
+    </p>
+  </description>
+  
+  <launchable type="service">thermoservice</launchable>
+  
+  <icon type="stock">thermoservice</icon>
+  
+  <categories>
+    <category>Science</category>
+    <category>Physics</category>
+  </categories>
+</component>

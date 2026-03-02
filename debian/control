@@ -14,3 +14,14 @@ Depends: ${shlibs:Depends},	${misc:Depends}, python3-flask, gunicorn
 Description: Temperature sharing service for DS18B20
  Show current temerature on 0.0.0.0:5000
 
+Package: thermometer-zabbix
+Architecture: all
+Depends: ${misc:Depends}, thermoservice, zabbix-agent2
+Description: Zabbix Agent2 integration for DS18B20 thermometer
+ This package provides Zabbix Agent2 configuration for monitoring
+ DS18B20 temperature sensors. It enables Zabbix to collect temperature
+ data using the thermo command.
+ .
+ After installation, the following user parameters are available:
+  - sensor.temp.value: Current temperature in Celsius
+  - sensor.temp.celsius: Current temperature in Celsius

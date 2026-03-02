@@ -1,3 +1,19 @@
+thermoservice (0.6) UNRELEASED; urgency=medium
+
+  * better error handling
+  * zabbix_agent2 configuration
+
+ -- vitex <info@vitexsoftware.cz>  Mon, 02 Mar 2026 23:50:32 +0100
+
+thermoservice (0.5) unstable; urgency=medium
+
+  * Fixed thermo command to handle missing DS18B20 sensor gracefully
+  * Added metainfo file for AppStream metadata
+  * Updated documentation with detailed description and usage examples
+  * Added thermometer-zabbix package for Zabbix Agent2 integration
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Sun, 02 Mar 2026 14:00:00 +0100
+
 thermoservice (0.4) unstable; urgency=medium
 
   * Updated for Debian 13 (Trixie)
