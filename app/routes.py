@@ -11,7 +11,11 @@ from app import thermo
 def index():
     hostname = socket.gethostname()
     when = datetime.datetime.now()
-    temperature = format(round(thermo.read_temp()[0], 3), 'f')
+    temp_data = thermo.read_temp()
+    if temp_data[0] is not None:
+        temperature = format(round(temp_data[0], 3), 'f')
+    else:
+        temperature = "No DS18B20 sensor detected"
     return render_template('index.html', title='ThermoService', hostname=hostname, when=when, temperature=temperature)
 
 
@@ -30,11 +34,23 @@ def logo():
 def ReturnJSON():
     # print(' C=%3.3f  F=%3.3f' % read_temp())
     if (request.method == 'GET'):
-        data = {
-            "rom": thermo.read_rom(),
-            "time": datetime.datetime.now(),
-            "sensor": socket.gethostname(),
-            "temperature": thermo.read_temp()[0]
-        }
+        temp_data = thermo.read_temp()
+        rom_data = thermo.read_rom()
+        
+        if temp_data[0] is not None:
+            data = {
+                "rom": rom_data,
+                "time": datetime.datetime.now(),
+                "sensor": socket.gethostname(),
+                "temperature": temp_data[0]
+            }
+        else:
+            data = {
+                "rom": None,
+                "time": datetime.datetime.now(),
+                "sensor": socket.gethostname(),
+                "temperature": None,
+                "error": "No DS18B20 sensor detected"
+            }
 
         return jsonify(data)

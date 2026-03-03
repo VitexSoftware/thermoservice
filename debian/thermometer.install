@@ -1,7 +1,0 @@
-thermoservice.py        usr/share/thermoservice
-app/*                   usr/share/thermoservice/app
-app/templates/*         usr/share/thermoservice/app/templates
-static/*                usr/share/thermoservice/static
-debian/thermo.conf      etc/modules-load.d/
-thermo                  usr/bin
-com.vitexsoftware.thermoservice.metainfo.xml usr/share/metainfo
