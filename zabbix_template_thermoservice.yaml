@@ -1,0 +1,101 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: f39c2369ffa646a09ff30c13692143d7
+      name: 'Templates/IoT'
+  templates:
+    - uuid: 94485b1f268a41a6b67984dd14ed72b5
+      template: 'DS18B20 Temperature Sensor'
+      name: 'DS18B20 Temperature Sensor by Thermoservice'
+      description: |
+        Template for monitoring DS18B20 temperature sensors via Thermoservice.
+        
+        This template monitors temperature readings from DS18B20 1-Wire temperature sensors
+        using the thermoservice application.
+        
+        Requirements:
+        - thermoservice package installed
+        - thermometer-zabbix package installed
+        - Zabbix Agent or Zabbix Agent2 configured
+        
+        Provides:
+        - Temperature monitoring in Celsius
+        - Temperature trend graphs
+        - Temperature threshold triggers
+        
+        Project: https://github.com/VitexSoftware/thermoservice
+      groups:
+        - name: 'Templates/IoT'
+      items:
+        - uuid: f3f6228572a64691a2a4f35717e01292
+          name: 'Temperature (Celsius)'
+          type: ZABBIX_ACTIVE
+          key: sensor.temp.celsius
+          delay: 1m
+          history: 7d
+          trends: 365d
+          value_type: FLOAT
+          units: °C
+          description: 'Current temperature reading from DS18B20 sensor in Celsius'
+          tags:
+            - tag: component
+              value: temperature
+            - tag: sensor
+              value: DS18B20
+          triggers:
+            - uuid: c53e303672094e6dad75ed3be4ae94f4
+              expression: 'last(/DS18B20 Temperature Sensor/sensor.temp.celsius)>40'
+              name: 'Temperature is too high (over 40°C)'
+              priority: WARNING
+              description: 'Temperature has exceeded 40 degrees Celsius'
+              tags:
+                - tag: scope
+                  value: availability
+            - uuid: 33754b4f401e49ce9f4421da98025354
+              expression: 'last(/DS18B20 Temperature Sensor/sensor.temp.celsius)>50'
+              name: 'Temperature is critically high (over 50°C)'
+              priority: HIGH
+              description: 'Temperature has exceeded 50 degrees Celsius - immediate attention required'
+              tags:
+                - tag: scope
+                  value: availability
+            - uuid: f17e548e8f4c4546849f0af4c447da1a
+              expression: 'last(/DS18B20 Temperature Sensor/sensor.temp.celsius)<0'
+              name: 'Temperature is below freezing (below 0°C)'
+              priority: INFO
+              description: 'Temperature has dropped below 0 degrees Celsius'
+              tags:
+                - tag: scope
+                  value: performance
+            - uuid: a2a46a7254374facbd065524cf5dba98
+              expression: 'nodata(/DS18B20 Temperature Sensor/sensor.temp.celsius,10m)=1'
+              name: 'No temperature data received'
+              priority: WARNING
+              description: 'No temperature data has been received for 10 minutes. Check if the sensor is connected and thermoservice is running.'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 1e14e7bdf5f94bcfb108d2f8eb64e9cc
+          name: 'Temperature Value'
+          type: ZABBIX_ACTIVE
+          key: sensor.temp.value
+          delay: 1m
+          history: 7d
+          trends: 365d
+          value_type: FLOAT
+          units: °C
+          description: 'Current temperature reading from DS18B20 sensor'
+          tags:
+            - tag: component
+              value: temperature
+            - tag: sensor
+              value: DS18B20
+  graphs:
+    - uuid: 9f79573223b14e22a3153ab290c21ac2
+      name: 'Temperature Trend'
+      graph_items:
+        - color: FF0000
+          calc_fnc: ALL
+          item:
+            host: 'DS18B20 Temperature Sensor'
+            key: sensor.temp.celsius

@@ -28,12 +28,23 @@ To enable Zabbix monitoring of temperature sensors:
 sudo apt install thermometer-zabbix
 ```
 
-This installs Zabbix Agent2 configuration that provides the following user parameters:
-
+This installs Zabbix Agent configuration that provides the following user parameters:
 - `sensor.temp.value` - Current temperature in Celsius
 - `sensor.temp.celsius` - Current temperature in Celsius
 
 The Zabbix agent will automatically restart after installation to load the new configuration.
+
+**Zabbix Template:**
+
+A pre-configured Zabbix 7.4 template is available in the repository at `zabbix_template_thermoservice.yaml`. Import this template into your Zabbix server to automatically configure:
+- Temperature monitoring items
+- Threshold triggers (high temperature, freezing, no data alerts)
+- Temperature trend graphs
+
+To use the template:
+1. Import `zabbix_template_thermoservice.yaml` into Zabbix
+2. Assign the "DS18B20 Temperature Sensor" template to your host
+3. Temperature data will be collected automatically
 
 ## Usage
 
@@ -51,13 +62,13 @@ The service automatically starts and exposes a web interface on port 5000, displ
 Thermoservice is a lightweight Flask-based web service designed for Raspberry Pi and similar devices equipped with DS18B20 temperature sensors. It reads temperature data from the 1-Wire interface and provides both a command-line tool and a web interface for monitoring temperature readings.
 
 **Features:**
-
 - Simple command-line temperature reading with `thermo` command
-- Web interface on port 5000 for real-time temperature display
+- Web interface on port 5000 for real-time temperature display with cyberpunk futuristic design
 - Systemd service integration for automatic startup
 - Designed for DS18B20 digital temperature sensors
 - Graceful handling when no sensor hardware is detected
-- Optional Zabbix Agent2 integration for monitoring (thermometer-zabbix package)
+- Optional Zabbix Agent integration for monitoring (thermometer-zabbix package)
+- Pre-configured Zabbix 7.4 template with triggers and graphs
 
 **Requirements:**
 
