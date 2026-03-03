@@ -3,46 +3,196 @@
         <meta http-equiv="refresh" content="30">
         <title>{{ title }}</title>
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
             body {
-                background-color: #1a1a1a;
-                color: #e0e0e0;
-                font-family: Arial, sans-serif;
-                margin: 20px;
+                background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%);
+                color: #00ff9f;
+                font-family: 'Orbitron', sans-serif;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                padding: 40px;
+                position: relative;
+                overflow: hidden;
             }
+            
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: 
+                    repeating-linear-gradient(
+                        0deg,
+                        transparent,
+                        transparent 2px,
+                        rgba(0, 255, 159, 0.03) 2px,
+                        rgba(0, 255, 159, 0.03) 4px
+                    );
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            .container {
+                position: relative;
+                z-index: 2;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .logo {
+                width: 200px;
+                filter: drop-shadow(0 0 20px rgba(0, 255, 159, 0.5));
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+            
+            h1 {
+                font-size: 3em;
+                font-weight: 900;
+                background: linear-gradient(90deg, #00ff9f, #00b8ff, #ff00ff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-shadow: 0 0 30px rgba(0, 255, 159, 0.5);
+                margin: 30px 0 20px 0;
+                letter-spacing: 2px;
+            }
+            
+            .timestamp {
+                color: #00b8ff;
+                font-size: 1.2em;
+                margin-bottom: 40px;
+                text-shadow: 0 0 10px rgba(0, 184, 255, 0.5);
+            }
+            
             .temp {
-                color: #ff4444;
-                font-size: 200px;
-                font-weight: bold;
+                color: #ff00ff;
+                font-size: 180px;
+                font-weight: 900;
+                text-shadow: 
+                    0 0 20px rgba(255, 0, 255, 0.8),
+                    0 0 40px rgba(255, 0, 255, 0.6),
+                    0 0 60px rgba(255, 0, 255, 0.4);
+                margin: 40px 0;
+                position: relative;
+                display: inline-block;
             }
-            a {
-                color: #4a9eff;
+            
+            .temp::after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, #ff00ff, transparent);
+                box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+            }
+            
+            .links {
+                display: flex;
+                gap: 30px;
+                margin-top: 40px;
+                flex-wrap: wrap;
+            }
+            
+            .links a {
+                color: #00ff9f;
                 text-decoration: none;
+                font-size: 1.1em;
+                padding: 15px 30px;
+                border: 2px solid #00ff9f;
+                border-radius: 5px;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-            a:hover {
-                text-decoration: underline;
+            
+            .links a::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 255, 159, 0.2);
+                transition: left 0.3s ease;
             }
+            
+            .links a:hover {
+                box-shadow: 0 0 20px rgba(0, 255, 159, 0.6);
+                transform: translateY(-2px);
+            }
+            
+            .links a:hover::before {
+                left: 0;
+            }
+            
             .magnymph {
                 position: fixed;
-                bottom: 10px;
-                right: 10px;
-                opacity: 0.3;
-                transition: opacity 0.3s;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                opacity: 0.6;
+                transition: all 0.3s ease;
+                filter: drop-shadow(0 0 10px rgba(0, 255, 159, 0.5));
             }
+            
             .magnymph:hover {
                 opacity: 1;
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 20px rgba(0, 255, 159, 0.8));
+            }
+            
+            .magnymph img {
+                width: 100px;
+                border-radius: 10px;
+            }
+            
+            .glitch {
+                position: relative;
+            }
+            
+            @keyframes glitch {
+                0% { transform: translate(0); }
+                20% { transform: translate(-2px, 2px); }
+                40% { transform: translate(-2px, -2px); }
+                60% { transform: translate(2px, 2px); }
+                80% { transform: translate(2px, -2px); }
+                100% { transform: translate(0); }
             }
         </style>
     </head>
     <body>
-        <img src="/logo.svg" title="ThermoService logo" style="width: 20%">
-        <h1>Thermoservice on {{ hostname }}!</h1>
-        {{ when }}
-        <div class="temp">{{ temperature }}&deg;</div>
-        <div><a href="/celsius">Celsius Temperature Endpoint</a></div>
-        <div><a href="https://github.com/VitexSoftware/thermoservice" target="_blank">Project Page</a></div>
+        <div class="container">
+            <img src="/logo.svg" title="ThermoService logo" class="logo">
+            <h1 class="glitch">Thermoservice on {{ hostname }}</h1>
+            <div class="timestamp">{{ when }}</div>
+            <div class="temp">{{ temperature }}&deg;</div>
+            <div class="links">
+                <a href="/celsius">⚡ Temperature API</a>
+                <a href="https://github.com/VitexSoftware/thermoservice" target="_blank">🔗 Project Page</a>
+            </div>
+        </div>
         <div class="magnymph">
             <a href="https://vitexsoftware.com" target="_blank">
-                <img src="https://vitexsoftware.com/images/magnymph.gif" alt="VitexSoftware" style="width: 80px;">
+                <img src="/magnymph.png" alt="VitexSoftware">
             </a>
         </div>
     </body>
