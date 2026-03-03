@@ -26,9 +26,11 @@ def favicon():
 
 @app.route('/logo.svg')
 def logo():
-    print(os.path.join(app.root_path, 'static'))
     return send_from_directory(os.path.join(app.root_path, '../static'), 'favicon.svg', mimetype='image/svg+xml')
 
+@app.route('/magnymph.png')
+def magnymph():
+    return send_from_directory(os.path.join(app.root_path, '../static'), 'nymfette3-smile.png', mimetype='image/png')
 
 @app.route('/celsius', methods=['GET'])
 def ReturnJSON():
