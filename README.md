@@ -180,25 +180,28 @@ Two approaches are supported:
 
 ### Option A: Pull (HA RESTful Sensor)
 
-Add the following to your Home Assistant `configuration.yaml` to have HA poll the thermoservice endpoint every 60 seconds:
+Add the following to your Home Assistant `configuration.yaml` to have HA poll the thermoservice endpoint every 60 seconds.
+Requires HA 2024+ — uses the modern `rest:` integration format which registers the entity in the entity registry (required for area assignment):
 
 ```yaml
-sensor:
-  - platform: rest
-    name: "Thermoservice Temperature"
-    resource: http://thermometer.local:5000/celsius
-    value_template: "{{ value_json.temperature }}"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_class: measurement
+rest:
+  - resource: http://thermometer.local:5000/celsius
     scan_interval: 60
-    json_attributes:
-      - rom
-      - sensor
-      - time
+    sensor:
+      - name: "Thermoservice Temperature"
+        unique_id: thermoservice_thermometer_temperature
+        value_template: "{{ value_json.temperature }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        json_attributes:
+          - rom
+          - sensor
+          - time
 ```
 
 Replace `thermometer.local` with your thermoservice host.
+The `unique_id` ensures the entity is registered and can be assigned to an area via **Settings → Areas**.
 
 ### Option B: Push (`thermoservice-homeassistant` package)
 

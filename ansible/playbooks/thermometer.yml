@@ -98,19 +98,20 @@
         path: "{{ ha_config_file }}"
         marker: "# {mark} ANSIBLE MANAGED - thermoservice RESTful sensor"
         block: |
-          sensor:
-            - platform: rest
-              name: "Thermoservice Temperature"
-              resource: {{ thermoservice_url }}/celsius
-              value_template: "{{ '{{ value_json.temperature }}' }}"
-              unit_of_measurement: "°C"
-              device_class: temperature
-              state_class: measurement
+          rest:
+            - resource: {{ thermoservice_url }}/celsius
               scan_interval: 60
-              json_attributes:
-                - rom
-                - sensor
-                - time
+              sensor:
+                - name: "Thermoservice Temperature"
+                  unique_id: thermoservice_thermometer_temperature
+                  value_template: "{{ '{{ value_json.temperature }}' }}"
+                  unit_of_measurement: "°C"
+                  device_class: temperature
+                  state_class: measurement
+                  json_attributes:
+                    - rom
+                    - sensor
+                    - time
       notify: Reload Home Assistant
 
   handlers:
