@@ -13,7 +13,7 @@ def index():
     when = datetime.datetime.now()
     temp_data = thermo.read_temp()
     if temp_data[0] is not None:
-        temperature = format(round(temp_data[0], 3), 'f')
+        temperature = f"{temp_data[0]:.4f}"
     else:
         temperature = "No DS18B20 sensor detected"
     return render_template('index.html', title='ThermoService', hostname=hostname, when=when, temperature=temperature)

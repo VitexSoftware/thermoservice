@@ -1,3 +1,13 @@
+thermoservice (0.8) stable; urgency=medium
+
+  * Add thermoservice-homeassistant package with ha_push.py push script
+  * Add systemd timer pushing DS18B20 temperature to Home Assistant every 60s
+  * Add /etc/default/thermoservice-homeassistant config file
+  * Fix temperature display precision to 4 decimal places matching
+    DS18B20 sensor resolution (0.0625°C)
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Sat, 09 May 2026 06:25:02 +0200
+
 thermoservice (0.6) UNRELEASED; urgency=medium
 
   * better error handling
