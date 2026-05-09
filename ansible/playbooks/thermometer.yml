@@ -1,0 +1,87 @@
+---
+- name: Prepare Thermometer armhf
+  hosts: thermometer.vitexsoftware.brevnov.czf
+  become: true
+  become_method: ansible.builtin.sudo
+  vars:
+    hass_url: http://10.11.182.67:8123
+  roles:
+    - role: apt_vitexsoftware
+
+  tasks:
+    - name: Remove old invalid Zabbix repository entries
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/apt/sources.list.d/zabbix.list
+        - /etc/apt/sources.list.d/zabbix.sources
+        - /etc/apt/preferences.d/zabbix-agent-preference
+        - /etc/apt/preferences.d/zabbix-agent2
+        - /etc/apt/keyrings/zabbix-repo.asc
+
+    - name: Configure Zabbix agent2 hostname
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^Hostname='
+        line: 'Hostname=thermometer.vitexsoftware.brevnov.czf'
+        state: present
+      notify: Restart zabbix-agent2
+
+    - name: Configure Zabbix agent2 server
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^Server='
+        line: 'Server=glencoe.vitexsoftware.brevnov.czf'
+        state: present
+      notify: Restart zabbix-agent2
+
+    - name: Configure Zabbix agent2 server active
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^ServerActive='
+        line: 'ServerActive=glencoe.vitexsoftware.brevnov.czf'
+        state: present
+      notify: Restart zabbix-agent2
+
+    - name: Enable and start Zabbix agent2 service
+      ansible.builtin.systemd:
+        name: zabbix-agent2
+        enabled: true
+        state: started
+
+    - name: Install thermoservice and integration packages
+      ansible.builtin.apt:
+        name:
+          - thermometer-zabbix
+          - thermoservice-homeassistant
+        state: present
+        update_cache: true
+
+    - name: Configure thermoservice-homeassistant environment
+      ansible.builtin.template:
+        src: ../templates/thermoservice-homeassistant.default.j2
+        dest: /etc/default/thermoservice-homeassistant
+        owner: root
+        group: root
+        mode: '0640'
+      notify: Restart thermoservice-homeassistant timer
+
+    - name: Enable and start thermoservice-homeassistant timer
+      ansible.builtin.systemd:
+        name: thermoservice-homeassistant.timer
+        enabled: true
+        state: started
+        daemon_reload: true
+
+  handlers:
+    - name: Restart zabbix-agent2
+      ansible.builtin.service:
+        name: zabbix-agent2
+        state: restarted
+
+    - name: Restart thermoservice-homeassistant timer
+      ansible.builtin.systemd:
+        name: thermoservice-homeassistant.timer
+        state: restarted
+        daemon_reload: true

@@ -1,0 +1,26 @@
+# Apache reverse proxy for Home Assistant on {{ inventory_hostname }}
+<VirtualHost *:80>
+    ServerName {{ inventory_hostname }}
+    ServerAdmin webmaster@{{ inventory_hostname }}
+
+    ProxyPreserveHost On
+    ProxyRequests Off
+
+    # WebSocket proxy for Home Assistant
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule ^/?(.*) ws://127.0.0.1:{{ homeassistant_port | default(8123) }}/$1 [P,L]
+
+    # Main application proxy
+    ProxyPass / http://127.0.0.1:{{ homeassistant_port | default(8123) }}/
+    ProxyPassReverse / http://127.0.0.1:{{ homeassistant_port | default(8123) }}/
+
+    # Forward real client info
+    RequestHeader set X-Forwarded-Proto "http"
+    RequestHeader set X-Forwarded-For %{REMOTE_ADDR}s
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+
+    ErrorLog ${APACHE_LOG_DIR}/homeassistant_error.log
+    CustomLog ${APACHE_LOG_DIR}/homeassistant_access.log combined
+</VirtualHost>
