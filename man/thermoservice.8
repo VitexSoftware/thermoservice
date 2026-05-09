@@ -1,0 +1,80 @@
+.TH THERMOSERVICE 8 "2026-05-09" "thermoservice 0.7" "System Administration"
+.SH NAME
+thermoservice \- Flask web service exposing DS18B20 temperature readings
+.SH SYNOPSIS
+.B gunicorn
+.RI \-b " 0.0.0.0:5000" " \-w " "4 thermoservice:app"
+.br
+(managed automatically via systemd)
+.SH DESCRIPTION
+.B thermoservice
+is a lightweight Flask application that reads temperature data from a DS18B20
+1-Wire sensor and exposes it over HTTP.  Under normal operation it is started
+automatically by systemd and served by
+.BR gunicorn (1)
+on port
+.BR 5000 .
+.PP
+When the 1-Wire kernel module is enabled (
+.BR w1-therm ), the service reads
+.I /sys/bus/w1/devices/28*/w1_slave
+and makes the current temperature available via a JSON endpoint and a
+browser-friendly HTML page.
+.SH HTTP ENDPOINTS
+.TP
+.B GET /
+HTML dashboard showing the hostname, current timestamp, and temperature.
+.TP
+.B GET /celsius
+JSON response with the following fields:
+.RS
+.IP \(bu 4
+.B temperature
+\(em temperature in degrees Celsius (float, or null if no sensor)
+.IP \(bu 4
+.B rom
+\(em sensor ROM identifier string
+.IP \(bu 4
+.B sensor
+\(em hostname of the device
+.IP \(bu 4
+.B time
+\(em timestamp of the reading
+.IP \(bu 4
+.B error
+\(em present only when no sensor is detected
+.RE
+.TP
+.B GET /logo.svg
+The service SVG icon.
+.TP
+.B GET /favicon.ico
+Browser favicon.
+.SH FILES
+.TP
+.I /usr/share/thermoservice/thermoservice.py
+Flask application entry point.
+.TP
+.I /etc/systemd/system/thermoservice.service
+systemd service unit.
+.TP
+.I /sys/bus/w1/devices/28*/w1_slave
+Kernel 1-Wire sysfs interface for DS18B20 sensors.
+.SH ENVIRONMENT
+.TP
+.B FLASK_CONFIG
+Set to
+.I production
+by the systemd unit.
+.TP
+.B FLASK_APP
+Set to
+.I thermoservice.py
+by the systemd unit.
+.SH SEE ALSO
+.BR thermo (1),
+.BR ha_push (8),
+.BR gunicorn (1),
+.BR systemctl (1)
+.SH AUTHOR
+Vítězslav Dvořák <info@vitexsoftware.cz>

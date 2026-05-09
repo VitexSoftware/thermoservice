@@ -1,0 +1,36 @@
+.TH THERMO 1 "2026-05-09" "thermoservice 0.7" "User Commands"
+.SH NAME
+thermo \- read DS18B20 temperature sensor and print result to stdout
+.SH SYNOPSIS
+.B thermo
+.SH DESCRIPTION
+.B thermo
+reads the current temperature from the first DS18B20 1-Wire temperature sensor
+found under
+.I /sys/bus/w1/devices/28*
+and prints the value in degrees Celsius to standard output, formatted to three
+decimal places.
+.PP
+If no sensor is detected, the program prints a diagnostic message and exits
+with status 0.
+.SH OUTPUT
+A single line of the form:
+.PP
+.RS
+.I 23.125
+.RE
+.PP
+representing the temperature in degrees Celsius.
+.SH FILES
+.TP
+.I /sys/bus/w1/devices/28*/w1_slave
+Kernel 1-Wire sysfs interface for DS18B20 sensors.
+.SH EXIT STATUS
+.TP
+.B 0
+Success (including when no sensor is detected).
+.SH SEE ALSO
+.BR thermoservice (8),
+.BR ha_push (8)
+.SH AUTHOR
+Vítězslav Dvořák <info@vitexsoftware.cz>

@@ -1,4 +1,4 @@
-thermoservice (0.8) stable; urgency=medium
+thermoservice (0.8.0) stable; urgency=medium
 
   * Add thermoservice-homeassistant package with ha_push.py push script
   * Add systemd timer pushing DS18B20 temperature to Home Assistant every 60s

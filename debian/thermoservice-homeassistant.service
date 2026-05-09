@@ -1,0 +1,9 @@
+[Unit]
+Description=Push DS18B20 temperature to Home Assistant
+After=network.target
+
+[Service]
+Type=oneshot
+User=www-data
+EnvironmentFile=/etc/default/thermoservice-homeassistant
+ExecStart=/usr/bin/python3 /usr/share/thermoservice/ha_push.py

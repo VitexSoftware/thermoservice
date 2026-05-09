@@ -74,3 +74,78 @@ Thermoservice is a lightweight Flask-based web service designed for Raspberry Pi
 
 - DS18B20 temperature sensor connected via 1-Wire interface
 - Raspberry Pi or compatible device with 1-Wire support enabled
+
+**AppStream / Icon:**
+
+The SVG icon (`static/favicon.svg`) is installed as
+`/usr/share/icons/hicolor/scalable/apps/com.vitexsoftware.thermoservice.svg`
+and referenced by the AppStream metainfo file
+`com.vitexsoftware.thermoservice.metainfo.xml`.
+
+## Man Pages
+
+After installation the following manual pages are available:
+
+- `man 1 thermo` – CLI command reference
+- `man 8 thermoservice` – Service / HTTP API reference
+- `man 8 ha_push` – Home Assistant push script reference
+
+## Testing
+
+Unit tests use `pytest` and require `python3-flask` and `python3-requests`.
+No real sensor hardware is needed — the tests mock all 1-Wire filesystem access.
+
+```bash
+python3 -m pytest tests/ -v
+```
+
+## Home Assistant Integration
+
+Two approaches are supported:
+
+### Option A: Pull (HA RESTful Sensor)
+
+Add the following to your Home Assistant `configuration.yaml` to have HA poll the thermoservice endpoint every 60 seconds:
+
+```yaml
+sensor:
+  - platform: rest
+    name: "Thermoservice Temperature"
+    resource: http://thermometer.local:5000/celsius
+    value_template: "{{ value_json.temperature }}"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    scan_interval: 60
+    json_attributes:
+      - rom
+      - sensor
+      - time
+```
+
+Replace `thermometer.local` with your thermoservice host.
+
+### Option B: Push (`thermoservice-homeassistant` package)
+
+Install the push package on the thermoservice device:
+
+```bash
+sudo apt install thermoservice-homeassistant
+```
+
+Configure your HA instance in `/etc/default/thermoservice-homeassistant`:
+
+```bash
+HASS_URL=http://homeassistant.local:8123
+HASS_TOKEN=your-long-lived-access-token
+```
+
+Generate a long-lived access token in HA under **Profile → Security → Long-Lived Access Tokens**.
+
+Enable and start the systemd timer:
+
+```bash
+sudo systemctl enable --now thermoservice-homeassistant.timer
+```
+
+The timer runs `ha_push.py` every 60 seconds, creating/updating the entity `sensor.thermoservice_temperature` in Home Assistant.

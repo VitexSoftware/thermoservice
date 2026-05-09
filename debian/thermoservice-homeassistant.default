@@ -1,0 +1,7 @@
+# Configuration for thermoservice-homeassistant
+# Home Assistant base URL (e.g. http://homeassistant.local:8123)
+HASS_URL=http://localhost:8123
+
+# Long-lived access token from Home Assistant
+# Generate one in HA: Profile → Security → Long-Lived Access Tokens
+HASS_TOKEN=

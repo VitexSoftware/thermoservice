@@ -16,7 +16,7 @@
   
   <launchable type="service">thermoservice</launchable>
   
-  <icon type="stock">thermoservice</icon>
+  <icon type="stock">com.vitexsoftware.thermoservice</icon>
   
   <categories>
     <category>Science</category>

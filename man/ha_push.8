@@ -1,0 +1,69 @@
+.TH HA_PUSH 8 "2026-05-09" "thermoservice 0.7" "System Administration"
+.SH NAME
+ha_push \- push DS18B20 temperature reading to Home Assistant REST API
+.SH SYNOPSIS
+.B ha_push.py
+.SH DESCRIPTION
+.B ha_push.py
+reads the current temperature from the local DS18B20 1-Wire sensor and pushes
+the reading to a Home Assistant instance via its REST API (States endpoint).
+.PP
+The script is normally invoked by the
+.B thermoservice-homeassistant.timer
+systemd timer every 60 seconds.  It creates or updates the entity
+.B sensor.thermoservice_temperature
+in Home Assistant with attributes including unit of measurement, device class,
+friendly name, sensor ROM, and hostname.
+.SH ENVIRONMENT
+.TP
+.B HASS_URL
+Base URL of the Home Assistant instance (default:
+.IR http://localhost:8123 ).
+.TP
+.B HASS_TOKEN
+Long-lived access token used for Bearer authentication.  Generate one in Home
+Assistant under
+.B Profile \(->  Security \(-> Long-Lived Access Tokens .
+.SH FILES
+.TP
+.I /usr/share/thermoservice/ha_push.py
+Script installed by the
+.B thermoservice-homeassistant
+package.
+.TP
+.I /etc/default/thermoservice-homeassistant
+Drop-in configuration file; set
+.B HASS_URL
+and
+.B HASS_TOKEN
+here.
+.TP
+.I /etc/systemd/system/thermoservice-homeassistant.service
+oneshot service unit that runs
+.BR ha_push.py .
+.TP
+.I /etc/systemd/system/thermoservice-homeassistant.timer
+Timer unit that triggers the service every 60 seconds.
+.SH EXIT STATUS
+.TP
+.B 0
+Reading was pushed successfully.
+.TP
+.B 1
+No sensor found, or HTTP request to Home Assistant failed.
+.SH EXAMPLE
+Configure credentials and enable the timer:
+.PP
+.RS
+.EX
+echo 'HASS_URL=http://homeassistant.local:8123' | sudo tee /etc/default/thermoservice-homeassistant
+echo 'HASS_TOKEN=<token>' | sudo tee -a /etc/default/thermoservice-homeassistant
+sudo systemctl enable --now thermoservice-homeassistant.timer
+.EE
+.RE
+.SH SEE ALSO
+.BR thermo (1),
+.BR thermoservice (8),
+.BR systemctl (1)
+.SH AUTHOR
+Vítězslav Dvořák <info@vitexsoftware.cz>

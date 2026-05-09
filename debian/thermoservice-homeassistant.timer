@@ -1,0 +1,10 @@
+[Unit]
+Description=Push DS18B20 temperature to Home Assistant every 60 seconds
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=60
+Unit=thermoservice-homeassistant.service
+
+[Install]
+WantedBy=timers.target

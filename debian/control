@@ -27,3 +27,14 @@ Description: Zabbix Agent integration for DS18B20 thermometer
  After installation, the following user parameters are available:
   - sensor.temp.value: Current temperature in Celsius
   - sensor.temp.celsius: Current temperature in Celsius
+
+Package: thermoservice-homeassistant
+Architecture: all
+Depends: ${misc:Depends}, thermoservice, python3-requests
+Description: Home Assistant integration for DS18B20 thermoservice
+ This package provides a push script and systemd timer that periodically
+ reads the local DS18B20 temperature sensor and pushes the reading to a
+ Home Assistant instance via its REST API.
+ .
+ Configure HASS_URL and HASS_TOKEN in /etc/default/thermoservice-homeassistant
+ and enable the timer with: systemctl enable --now thermoservice-homeassistant.timer
