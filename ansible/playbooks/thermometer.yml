@@ -1,58 +1,25 @@
 ---
-- name: Prepare Thermometer armhf
-  hosts: thermometer.vitexsoftware.brevnov.czf
+# Example Ansible playbook for deploying thermoservice with Home Assistant integration.
+#
+# Required variables (set in group_vars, host_vars, or vault):
+#   hass_url          - Home Assistant base URL, e.g. http://homeassistant.local:8123
+#   hass_token        - HA long-lived access token (keep in vault)
+#   ha_config_file    - Path to configuration.yaml on the HA host
+#                       Docker example: /var/lib/docker/volumes/homeassistant_config/_data/configuration.yaml
+#                       HA OS / bare-metal: /config/configuration.yaml
+#   thermoservice_url - Base URL of the thermoservice device, e.g. http://thermometer.local:5000
+#   zabbix_server     - Zabbix server hostname (optional, for Zabbix integration)
+
+- name: Deploy thermoservice on sensor device
+  hosts: thermoservice_devices
   become: true
   become_method: ansible.builtin.sudo
-  vars:
-    hass_url: http://10.11.182.67:8123
-  roles:
-    - role: apt_vitexsoftware
 
   tasks:
-    - name: Remove old invalid Zabbix repository entries
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /etc/apt/sources.list.d/zabbix.list
-        - /etc/apt/sources.list.d/zabbix.sources
-        - /etc/apt/preferences.d/zabbix-agent-preference
-        - /etc/apt/preferences.d/zabbix-agent2
-        - /etc/apt/keyrings/zabbix-repo.asc
-
-    - name: Configure Zabbix agent2 hostname
-      ansible.builtin.lineinfile:
-        path: /etc/zabbix/zabbix_agent2.conf
-        regexp: '^Hostname='
-        line: 'Hostname=thermometer.vitexsoftware.brevnov.czf'
-        state: present
-      notify: Restart zabbix-agent2
-
-    - name: Configure Zabbix agent2 server
-      ansible.builtin.lineinfile:
-        path: /etc/zabbix/zabbix_agent2.conf
-        regexp: '^Server='
-        line: 'Server=glencoe.vitexsoftware.brevnov.czf'
-        state: present
-      notify: Restart zabbix-agent2
-
-    - name: Configure Zabbix agent2 server active
-      ansible.builtin.lineinfile:
-        path: /etc/zabbix/zabbix_agent2.conf
-        regexp: '^ServerActive='
-        line: 'ServerActive=glencoe.vitexsoftware.brevnov.czf'
-        state: present
-      notify: Restart zabbix-agent2
-
-    - name: Enable and start Zabbix agent2 service
-      ansible.builtin.systemd:
-        name: zabbix-agent2
-        enabled: true
-        state: started
-
     - name: Install thermoservice and integration packages
       ansible.builtin.apt:
         name:
+          - thermoservice
           - thermometer-zabbix
           - thermoservice-homeassistant
         state: present
@@ -74,6 +41,40 @@
         state: started
         daemon_reload: true
 
+    - name: Configure Zabbix agent2 hostname
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^Hostname='
+        line: "Hostname={{ inventory_hostname }}"
+        state: present
+      notify: Restart zabbix-agent2
+      when: zabbix_server is defined
+
+    - name: Configure Zabbix agent2 server
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^Server='
+        line: "Server={{ zabbix_server }}"
+        state: present
+      notify: Restart zabbix-agent2
+      when: zabbix_server is defined
+
+    - name: Configure Zabbix agent2 server active
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^ServerActive='
+        line: "ServerActive={{ zabbix_server }}"
+        state: present
+      notify: Restart zabbix-agent2
+      when: zabbix_server is defined
+
+    - name: Enable and start Zabbix agent2 service
+      ansible.builtin.systemd:
+        name: zabbix-agent2
+        enabled: true
+        state: started
+      when: zabbix_server is defined
+
   handlers:
     - name: Restart zabbix-agent2
       ansible.builtin.service:
@@ -85,3 +86,41 @@
         name: thermoservice-homeassistant.timer
         state: restarted
         daemon_reload: true
+
+- name: Configure Home Assistant RESTful sensor for thermoservice
+  hosts: homeassistant_hosts
+  become: true
+  become_method: ansible.builtin.sudo
+
+  tasks:
+    - name: Add thermoservice RESTful sensor to HA configuration.yaml
+      ansible.builtin.blockinfile:
+        path: "{{ ha_config_file }}"
+        marker: "# {mark} ANSIBLE MANAGED - thermoservice RESTful sensor"
+        block: |
+          sensor:
+            - platform: rest
+              name: "Thermoservice Temperature"
+              resource: {{ thermoservice_url }}/celsius
+              value_template: "{{ '{{ value_json.temperature }}' }}"
+              unit_of_measurement: "°C"
+              device_class: temperature
+              state_class: measurement
+              scan_interval: 60
+              json_attributes:
+                - rom
+                - sensor
+                - time
+      notify: Reload Home Assistant
+
+  handlers:
+    - name: Reload Home Assistant
+      ansible.builtin.uri:
+        url: "{{ hass_url }}/api/services/homeassistant/restart"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ hass_token }}"
+          Content-Type: application/json
+        status_code: [200, 201]
+      become: false
+      delegate_to: localhost

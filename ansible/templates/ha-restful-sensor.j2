@@ -1,0 +1,16 @@
+# Home Assistant RESTful sensor for thermoservice (DS18B20 temperature)
+# Managed by Ansible - do not edit this block manually.
+# Variables: thermoservice_url (e.g. http://thermometer.local:5000)
+sensor:
+  - platform: rest
+    name: "Thermoservice Temperature"
+    resource: {{ thermoservice_url }}/celsius
+    value_template: "{{ '{{ value_json.temperature }}' }}"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    scan_interval: 60
+    json_attributes:
+      - rom
+      - sensor
+      - time

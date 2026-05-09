@@ -99,6 +99,81 @@ No real sensor hardware is needed — the tests mock all 1-Wire filesystem acces
 python3 -m pytest tests/ -v
 ```
 
+## Ansible Deployment
+
+An example Ansible playbook is provided in `ansible/` for automated deployment.
+
+### Directory layout
+
+```
+ansible/
+  playbooks/
+    thermometer.yml          # Main playbook (two plays: sensor device + HA host)
+  templates/
+    thermoservice-homeassistant.default.j2  # /etc/default config template
+    ha-restful-sensor.j2                    # HA RESTful sensor block (reference)
+    homeassistant-proxy.conf.j2             # Apache reverse proxy for HA
+```
+
+### Inventory groups
+
+The playbook expects two inventory groups:
+
+```ini
+[thermoservice_devices]
+thermoservice-pi.local
+
+[homeassistant_hosts]
+homeassistant.local
+```
+
+### Required variables
+
+| Variable | Description | Example |
+|---|---|---|
+| `hass_url` | HA base URL | `http://homeassistant.local:8123` |
+| `hass_token` | HA long-lived access token (vault) | — |
+| `ha_config_file` | Path to `configuration.yaml` on HA host | `/config/configuration.yaml` |
+| `thermoservice_url` | Thermoservice base URL | `http://thermometer.local:5000` |
+| `zabbix_server` | Zabbix server host (optional) | `zabbix.local` |
+
+For Docker-based HA the `ha_config_file` path is typically:
+`/var/lib/docker/volumes/homeassistant_config/_data/configuration.yaml`
+
+Store `hass_token` in an Ansible vault file, e.g. `vars/vault.yml`:
+
+```yaml
+hass_token: eyJ...
+```
+
+### Running
+
+```bash
+# Install thermoservice + push timer on sensor device, configure HA RESTful sensor
+ansible-playbook -i inventory ansible/playbooks/thermometer.yml
+
+# Sensor device only
+ansible-playbook -i inventory ansible/playbooks/thermometer.yml --limit thermoservice_devices
+
+# HA config only
+ansible-playbook -i inventory ansible/playbooks/thermometer.yml --limit homeassistant_hosts
+```
+
+### What the playbook does
+
+**Play 1 — sensor device:**
+- Installs `thermoservice`, `thermometer-zabbix`, `thermoservice-homeassistant`
+- Deploys `/etc/default/thermoservice-homeassistant` with `HASS_URL` and `HASS_TOKEN`
+- Enables `thermoservice-homeassistant.timer` (pushes temperature every 60 s)
+- Configures Zabbix agent2 (if `zabbix_server` is set)
+
+**Play 2 — HA host:**
+- Inserts/updates the RESTful sensor block in `configuration.yaml` using `blockinfile`
+  (idempotent — re-running the playbook is safe)
+- Restarts Home Assistant via the REST API when the block changes
+- After restart, `sensor.thermoservice_temperature` appears in HA entity registry
+  and can be assigned to an area via **Settings → Areas**
+
 ## Home Assistant Integration
 
 Two approaches are supported:
